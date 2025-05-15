@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opencraft Book Preview</title>
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftRegular-Bmg3.otf') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Minecraft';
+    }
+
+    /* Book icon on launch */
+    #bookIcon {
+      width: 75px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #bookIcon:hover {
+      
+    }
+
+    .preview_zone {
+      display: none; /* Hide initially */
+      font-size: 22px;
+      width: 277px;
+      height: 366px;
+      background: url('book.png') no-repeat;
+      padding: 33px 35px 33px 38px;
+      line-height: 22px;
+      position: relative;
+      word-break: keep-all;
+    }
+
+    .page {
+      display: none;
+      height: 280px;
+      overflow-y: auto;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .nav {
+      position: absolute;
+      bottom: 35px;
+      width: 240px;
+      margin-left: 15px;
+    }
+
+    .left {
+      background: url('left.png') no-repeat;
+      width: 50px;
+      height: 28px;
+      float: left;
+      display: none;
+      cursor: pointer;
+    }
+
+    .left:hover {
+      background: url('leftH.png') no-repeat;
+    }
+
+    .right {
+      background: url('right.png') no-repeat;
+      width: 50px;
+      height: 28px;
+      float: right;
+      display: block;
+      cursor: pointer;
+    }
+
+    .right:hover {
+      background: url('rightH.png') no-repeat;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Book Icon -->
+  <img id="bookIcon" src="Written_Book.webp" alt="Click to open book">
+
+  <!-- Minecraft Book Preview -->
+  <div class="preview_zone" id="bookPreview">
+    <div class="page active">
+      Welcome to Opencraft, a place where your Minecraft server gets the spotlight it deserves, for free! We're all about creativity, community, and helping you build your dream server world one block at a time.
+    </div>
+    
+    <div class="page">
+      Right now, the website you're visiting is still under construction. That means we're actively working behind the scenes to bring you awesome features, smoother performance, and a truly polished experience.
+    </div>
+    
+    <div class="page">
+      Think of it like laying down the foundation before the rest of the build — we're not quite finished yet, but we're getting there.<br><br>
+      We appreciate your patience and understanding as we continue to develop the site.
+    </div>
+    
+    <div class="page">
+      Your excitement and support mean a lot to us — and we promise that what's coming will be worth the wait.<br><br>
+      Thanks for stopping by!<br>
+      — The Opencraft Team
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav">
+      <div class="left" onclick="prevPage()"></div>
+      <div class="right" onclick="nextPage()"></div>
+    </div>
+  </div>
+
+  <script>
+    const bookIcon = document.getElementById('bookIcon');
+    const bookPreview = document.getElementById('bookPreview');
+    const pages = document.querySelectorAll('.page');
+    const leftBtn = document.querySelector('.left');
+    const rightBtn = document.querySelector('.right');
+    let currentPage = 0;
+
+    // When book icon is clicked
+    bookIcon.addEventListener('click', () => {
+      bookIcon.style.display = 'none';       // Hide the icon
+      bookPreview.style.display = 'block';   // Show the book UI
+    });
+
+    function updateButtons() {
+      leftBtn.style.display = currentPage > 0 ? 'block' : 'none';
+      rightBtn.style.display = currentPage < pages.length - 1 ? 'block' : 'none';
+    }
+
+    function showPage(index) {
+      if (index < 0 || index >= pages.length) return;
+      pages.forEach(page => page.classList.remove('active'));
+      pages[index].classList.add('active');
+      currentPage = index;
+      updateButtons();
+    }
+
+    function nextPage() {
+      showPage(currentPage + 1);
+    }
+
+    function prevPage() {
+      showPage(currentPage - 1);
+    }
+
+    // Initialize
+    showPage(0);
+  </script>
+</body>
+</html>

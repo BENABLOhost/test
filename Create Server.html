@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Server</title>
+    <link rel="icon" type="image/x-icon" href="USB_Charger.ico">
+    <style>
+        /* Minecraft Font */
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('MinecraftRegular-Bmg3.otf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Minecraft Bold';
+            src: url('MinecraftBold-nMK1.otf') format('truetype');
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('Dirt.webp');
+            background-repeat: repeat;
+            background-color: rgba(0, 0, 0, 0.3);
+            background-blend-mode: multiply;
+            image-rendering: pixelated;
+            font-family: 'Minecraft', sans-serif;
+            color: rgb(255, 255, 255);
+            min-height: 100vh;
+        }
+        
+        .main-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .form-container {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 4px solid #4a4a4a;
+            box-shadow: 0 0 0 2px #1a1a1a;
+            padding: 20px;
+            max-width: 600px;
+        }
+        
+        .preview-container {
+            width: 350px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        
+        .title {
+            background: linear-gradient(to right, #3c3c3c, #2d2d2d);
+            color: white;
+            padding: 8px 12px;
+            border-bottom: 2px solid #1a1a1a;
+            font-family: 'Minecraft Bold', sans-serif;
+            font-size: 18px;
+            text-shadow: 2px 2px 0 #1a1a1a;
+            margin-bottom: 20px;
+        }
+        
+        /* Server Preview Card Styles */
+        .server-preview {
+            width: 100%;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            color: #FFFFFF;
+            border: 2px solid #555;
+            margin-bottom: 20px;
+        }
+        
+        .server-preview-title {
+            font-size: 18px;
+            margin-bottom: 16px;
+            line-height: 24px;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .server-icon-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .server-icon-preview {
+            width: 48px;
+            height: 48px;
+            image-rendering: pixelated;
+            border: 2px solid #555;
+            object-fit: cover;
+        }
+        
+        .server-name-preview {
+            font-size: 20px;
+            margin-bottom: 0;
+            line-height: 24px;
+        }
+        
+        .server-stats {
+            color: #AAAAAA;
+            font-size: 15px;
+            margin-bottom: 16px;
+            line-height: 20px;
+            margin-left: 60px;
+        }
+        
+        .server-status {
+            color: #39FF14;
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 20px;
+            margin-left: 60px;
+        }
+        
+        .join-button {
+            width: 100%;
+            color: white;
+            border: 2px solid #555;
+            border-radius: 0;
+            padding: 8px 12px;
+            font-family: 'Minecraft';
+            font-size: 15px;
+            cursor: pointer;
+            line-height: 20px;
+            background: linear-gradient(
+                90deg,
+                #FF0000 0%,
+                #FF7F00 14%,
+                #FFFF00 28%,
+                #00FF00 42%,
+                #0000FF 56%,
+                #4B0082 70%,
+                #9400D3 84%,
+                #FF0000 100%
+            );
+            background-size: 200% auto;
+            text-shadow: 2px 2px 0 #000;
+            box-shadow: inset -4px -4px 0px 0px rgba(0,0,0,0.2);
+            margin-bottom: 16px;
+        }
+        
+        .join-button:hover {
+            animation: rainbow 1.5s linear infinite;
+            box-shadow: inset -4px -4px 0px 0px rgba(0,0,0,0.2),
+                        0 0 8px rgba(255,255,255,0.3);
+        }
+        
+        .server-description {
+            color: #AAAAAA;
+            font-size: 13px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            border-top: 2px solid #555;
+            padding-top: 12px;
+        }
+        
+        .server-link {
+            color: #55AAFF;
+            text-decoration: none;
+        }
+        
+        @keyframes rainbow {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-family: 'Minecraft', sans-serif;
+            color: #aaaaaa;
+            margin-bottom: 5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            font-family: 'Minecraft', sans-serif;
+            background-color: #2d2d2d;
+            border: 2px solid #4a4a4a;
+            color: white;
+            box-sizing: border-box;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 8px;
+            font-family: 'Minecraft', sans-serif;
+            background-color: #2d2d2d;
+            border: 2px solid #4a4a4a;
+            color: white;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 8px;
+            font-family: 'Minecraft', sans-serif;
+            background-color: #2d2d2d;
+            border: 2px solid #4a4a4a;
+            color: white;
+        }
+        
+        .form-checkbox {
+            margin-right: 10px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .button {
+              background: linear-gradient(to bottom, #4c7f9e, #3a5d7a);
+            color: white;
+            border: 2px solid #1a1a1a;
+            padding: 8px 20px;
+            font-family: 'Minecraft', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            text-shadow: 1px 1px 0 #1a1a1a;
+            image-rendering: pixelated;
+            text-decoration: none;
+            display: inline-block;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMQAAAAPCAAAAACe4j/AAAAEuElEQVRIx1WWS5Ibuw5EtddrdRRJJE4iSKrb4c2/AUuy30iK+jEBHCTwAICMCgAKiGhKVQUwKzJHQo4mQGBy7AIvk1E2AQKhFt6bUGD1gILy0DkD4dmzACkGyzCScgFgQmLZr4LpQpC56QB2wgSYE8i1fd6xd1yPHIAKwAs14Undx2LIHK0X6vdFbzTa6CNBLQE8Y5rapn7oAl3KSDKC6cLfL6sLnIVG7ffnyUgvQ6rwLjUZdIVqWz0iEXXCZ+TJsV8feUdoPHDk+a/IeAbq0ldLT59jtHweHwmKS6gFSUYCqKcVsPami1pEnqolkCMBiAS87FXTICp03geYUr8TV8un3KuyC0BfTUzihOCdwjUya1bkT9VWe+AaFOoJzHdtERXRe/eulyEDhC6pjYwr+JQuIDU9/0wQBnJEAkd+9i6IRTJrV7YWnGfwLA6ESphkBoCu88M0YH1CTTOiRUpDdwpGkkP5yL9phhwn+QVxDarAXq513y9bLKgxBGR/CjDyMl4ECd6lO82CaMLbEHGHp1R8ePDERj392ssaCOigNjJ+dXXl6OLUFfVx6dA1BFJLlHpkUHPam095C3QJLIjn6OLIOB3xe0JS85Zd+govg1/z/UhtG3RdVW98yxNp5I0Vtf/U+6y/dJ/yHtSK4q7G9ARscC3/Df/kXTwiT3d6ovjEISLJIVEvBwWeCXlALZTbpy85xqWuf3sNiBBUmYjI+BqN6aNQqDWpipSYf3W1nOV/WALoykjIiCPreSn97UigsjZdPA5s3AmCDIxaVO0Fa1fV/qkaiijPPz/bEeRyLSBDI8K8j37TO8aH7vmOqUUQ1DboYhvqd+FlFGEo+2T75MbLGnjvPeu7Pl521Ap14dcR3h7p75qv4xieqnNDoyCPLt/yKkf5gOUXl+6S3d9Syq/982fz+fhpsm28C5EhJcxsWWQke6KoPMA7tqm7kKcrn6FLhWcoqCNCxDPyQ8wEKR73nIlEX8GpARSJX7/rzeNtWPD/Dl2IwtOYMwV7osGsHYJanzeU7KqIZVCTcrT0IEbyD4d1e1dkBtW2qLhLXK7a1ogDqsjI1DR4PY7nHEqfF9tn8HUJL+eQ/lGOXdwI1++57CqgmDaReM9CZYLAk4D4ymqti4KZI9Htz9OnrcuOhCQEqJfXaxHPAFG/l/ee1GFJPXmPryYUiUGPutnRGXkagmnjHk5RNpm7xxiclm6CjJEQ4+MD4xPmuT9Ef4b3YT3B51a7d4Np76PF0cavuC+SoaH6PlilipEakoJBJETWT3k7Hf+1REPj2fIx95t5ct6u9S5v3KM2fv2Ve29ax9yC98zT2IZot61MHyYtdPF92nguZ29xfcVxSu9Nj5Gl8G3wcVoW8n1Q/f6BHFEAyy5R2aRIdYH8XfV4453vHKcnqarXPD6mdrD0rlVV5xBPF2xuJM5Oo0SdaaqGMjJva7ii6bYv74IzPMo5pGebpu72ghypwTR+WWDuhQOkFijGyAzF3GXh11lEH0hkPINZivpTqLEtVm2j1hVcn/S0//q0es5dbyxOErxKivQ+bHotvzcT3/XztPf20XqG6fJZMePT2X6ts+nlm9LoSYHMiHuJjGXniB7v2fo/5qT4nuxYg6AAAAAASUVORK5CYII=);
+	font-family: 'Minecraft';
+  	border-color: #AAA #565656 #565656 #AAA;
+  	text-shadow: 3px 3px #4C4C4C;
+  	outline: 2px solid #000;
+        }
+        
+        .button:hover {
+            background: linear-gradient(to bottom, #5a8fac, #487095);
+        }
+        
+        .button-secondary {
+            background: linear-gradient(to bottom, #6d6d6d, #575757);
+        }
+        
+        .button-secondary:hover {
+            background: linear-gradient(to bottom, #7b7b7b, #656565);
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4a4a4a;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #2d2d2d;
+            border: 2px solid #4a4a4a;
+            border-bottom: none;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: #3a3a3a;
+            border-bottom: 2px solid #3a3a3a;
+            margin-bottom: -2px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .error-message {
+            color: #ff5555;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="form-container">
+            <div class="title">Create & customize server</div>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="create">Customize Server</div>
+                <div class="tab" data-tab="promote">Promote Existing Server</div>
+            </div>
+            
+            <!-- Create Server Tab -->
+            <div id="create" class="tab-content active">
+                <form id="serverForm">
+                    <div class="form-group">
+                        <label class="form-label">Server Name</label>
+                        <input type="text" id="serverName" class="form-input" placeholder="My Awesome Server" value="My server" required>
+                        <div class="error-message" id="nameError">Please enter a server name</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server Description</label>
+                        <textarea id="serverDescription" class="form-textarea" placeholder="Describe your server..." required>Description here!</textarea>
+                        <div class="error-message" id="descError">Please enter a description</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server Website (optional)</label>
+                        <input type="url" id="serverWebsite" class="form-input" placeholder="https://yourserver.com" value="https://enteryourwebsitehere.com/">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server Icon</label>
+                        <input type="file" id="serverIcon" class="form-input" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server Type</label>
+                        <select id="serverType" class="form-select">
+                            <option value="vanilla">Vanilla</option>
+                            <option value="paper">PaperMC</option>
+                            <option value="spigot">Spigot</option>
+                            <option value="fabric">Fabric</option>
+                            <option value="forge">Forge</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Minecraft Version</label>
+                        <select id="serverVersion" class="form-select">
+                            <option value="1.20.1">1.20.1 (Latest)</option>
+                            <option value="1.19.4">1.19.4</option>
+                            <option value="1.18.2">1.18.2</option>
+                            <option value="1.17.1">1.17.1</option>
+                            <option value="1.16.5">1.16.5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">World Type</label>
+                        <select id="worldType" class="form-select">
+                            <option value="default">Default</option>
+                            <option value="flat">Flat</option>
+                            <option value="large_biomes">Large Biomes</option>
+                            <option value="amplified">Amplified</option>
+                            <option value="single_biome">Single Biome</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isPrivate" class="form-checkbox">
+                            <span class="form-label">Make server private (only people with link can join)</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="index.html" class="button button-secondary">Back to Server List</a>
+                        <button type="button" id="nextButton" class="button">Next ></button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Promote Server Tab -->
+            <div id="promote" class="tab-content">
+                <form id="promoteForm">
+                    <div class="form-group">
+                        <label class="form-label">Server Address (IP or domain)</label>
+                        <input type="text" id="serverAddress" class="form-input" placeholder="play.example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Port (default is 25565)</label>
+                        <input type="number" id="serverPort" class="form-input" placeholder="25565" value="25565">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server Name</label>
+                        <input type="text" id="promoteName" class="form-input" placeholder="Server Name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Server hosted by:</label>
+                        <select id="verificationMethod" class="form-select">
+                            <option value="Aternos">Aternos</option>
+                            <option value="Modrinth">Modrinth</option>
+                            <option value="Scalacube">Scalacube</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="backButton" class="button button-secondary">< Back</button>
+                        <button type="submit" class="button">Promote Server</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Server Preview Card -->
+        <div class="preview-container">
+            <div class="title">Server Preview</div>
+            <div class="server-preview">
+                <div class="server-preview-title">Server Info</div>
+                <div class="server-icon-container">
+                    <img id="serverIconPreview" class="server-icon-preview" src="https://yt3.googleusercontent.com/ytc/AIdro_nRBawueDy4A2hLalZPoCWcyppX48dJhGWbKlqCn6S7s8w=s900-c-k-c0x00ffffff-no-rj">
+                    <div id="serverNamePreview" class="server-name-preview">My server</div>
+                </div>
+                <div id="serverStatsPreview" class="server-stats">Vanilla 1.20.1</div>
+                <div class="server-status">Creating...</div>
+                <button class="join-button">Join Server</button>
+                <div id="serverDescriptionPreview" class="server-description">
+                    Description here!
+                    <a id="serverLinkPreview" class="server-link" href="https://enteryourwebsitehere.com/" target="_blank">https://enteryourwebsitehere.com/</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        let formCompleted = false;
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                if (tab.dataset.tab === "promote" && !formCompleted) {
+                    alert("Please complete the server customization form first before promoting an existing server.");
+                    return;
+                }
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Next button functionality
+        document.getElementById('nextButton').addEventListener('click', function() {
+            const name = document.getElementById('serverName').value.trim();
+            const description = document.getElementById('serverDescription').value.trim();
+            
+            // Validate required fields
+            let isValid = true;
+            
+            if (!name) {
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('nameError').style.display = 'none';
+            }
+            
+            if (!description) {
+                document.getElementById('descError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('descError').style.display = 'none';
+            }
+            
+            if (isValid) {
+                formCompleted = true;
+                
+                // Switch to promote tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="promote"]').classList.add('active');
+                document.getElementById('promote').classList.add('active');
+                
+                // Auto-fill promote form with values from create form
+                document.getElementById('promoteName').value = name;
+            }
+        });
+
+        // Back button functionality
+        document.getElementById('backButton').addEventListener('click', function() {
+            // Switch back to create tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            document.querySelector('.tab[data-tab="create"]').classList.add('active');
+            document.getElementById('create').classList.add('active');
+        });
+
+        // Live preview updates
+        const updatePreview = () => {
+            document.getElementById('serverNamePreview').textContent = 
+                document.getElementById('serverName').value || 'My Server';
+            
+            document.getElementById('serverDescriptionPreview').innerHTML = 
+                document.getElementById('serverDescription').value + 
+                (document.getElementById('serverWebsite').value ? 
+                 `<br><a class="server-link" href="${document.getElementById('serverWebsite').value}" target="_blank">${document.getElementById('serverWebsite').value}</a>` : '');
+            
+            const serverType = document.getElementById('serverType').value;
+            const serverVersion = document.getElementById('serverVersion').value;
+            document.getElementById('serverStatsPreview').textContent = 
+                `${serverType.charAt(0).toUpperCase() + serverType.slice(1)} ${serverVersion}`;
+        };
+
+        // Handle icon upload preview
+        document.getElementById('serverIcon').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('serverIconPreview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Set up live updates for all form fields
+        ['serverName', 'serverDescription', 'serverWebsite', 'serverType', 'serverVersion'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+            document.getElementById(id).addEventListener('change', updatePreview);
+        });
+
+        // Initialize preview
+        updatePreview();
+
+        // Form submissions
+        document.getElementById('promoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            promoteServer();
+        });
+        
+        function promoteServer() {
+            const address = document.getElementById('serverAddress').value;
+            const port = document.getElementById('serverPort').value;
+            const name = document.getElementById('promoteName').value;
+            const verification = document.getElementById('verificationMethod').value;
+            
+            // Show success message
+            alert(`Server promoted successfully!\n\nName: ${name}\nAddress: ${address}:${port}\nVerification: ${verification}`);
+            
+            // Redirect back to main page
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
