@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opencraft Bookshelf</title>
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('MinecraftRegular-Bmg3.otf') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background: #1a1a1a url('https://i.imgur.com/XsYQe3a.png') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      font-family: 'Minecraft', sans-serif;
+      color: #e0e0e0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Bookshelf UI */
+    #library {
+      background: url('https://i.imgur.com/JjQKbHs.png') no-repeat center center;
+      width: 800px;
+      height: 600px;
+      position: relative;
+      padding-top: 100px;
+    }
+
+    .bookshelf-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .book-slot {
+      width: 60px;
+      height: 80px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .book {
+      width: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 0, 0.7));
+    }
+
+    .book:hover {
+      transform: translateY(-5px) scale(1.1);
+    }
+
+    .book.read {
+      filter: grayscale(80%) brightness(0.6) drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+    }
+
+    /* EXACT Book Preview UI (from your CSS) */
+    .preview_zone {
+      display: none;
+      font-size: 22px;
+      width: 277px;
+      height: 366px;
+      background: url('book.png') no-repeat;
+      padding: 33px 35px 33px 38px;
+      line-height: 22px;
+      position: absolute;
+      word-break: keep-all;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+
+    .page {
+      display: none;
+      height: 280px;
+      overflow-y: auto;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .nav {
+      position: absolute;
+      bottom: 35px;
+      width: 240px;
+      margin-left: 15px;
+    }
+
+    .left {
+      background: url('left.png') no-repeat;
+      width: 50px;
+      height: 28px;
+      float: left;
+      display: none;
+      cursor: pointer;
+    }
+
+    .left:hover {
+      background: url('leftH.png') no-repeat;
+    }
+
+    .right {
+      background: url('right.png') no-repeat;
+      width: 50px;
+      height: 28px;
+      float: right;
+      display: block;
+      cursor: pointer;
+    }
+
+    .right:hover {
+      background: url('rightH.png') no-repeat;
+    }
+
+    /* Close Button (added) */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      background: url('close.png') no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Dim background when book is open */
+    .dim-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <!-- Bookshelf UI -->
+  <div id="library">
+    <div class="bookshelf-row">
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="update1" onclick="openBook(this)"></div>
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="rules" onclick="openBook(this)"></div>
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="event" onclick="openBook(this)"></div>
+    </div>
+    <div class="bookshelf-row">
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="guide" onclick="openBook(this)"></div>
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="news" onclick="openBook(this)"></div>
+      <div class="book-slot"><img class="book" src="Written_Book.webp" data-id="patch" onclick="openBook(this)"></div>
+    </div>
+  </div>
+
+  <!-- Dim overlay when book is open -->
+  <div class="dim-overlay" id="dimOverlay"></div>
+
+  <!-- Book Preview UI (your exact structure) -->
+  <div class="preview_zone" id="bookPreview">
+    <button class="close-btn" onclick="closeBook()"></button>
+    <div id="pagesContainer">
+      <!-- Pages will be injected here -->
+    </div>
+    <div class="nav">
+      <div class="left" onclick="prevPage()"></div>
+      <div class="right" onclick="nextPage()"></div>
+    </div>
+  </div>
+
+  <script>
+    // Notification Database
+    const notifications = {
+      update1: {
+        title: "Update 1.20",
+        pages: [
+          "New biomes: Cherry Groves and Camels!",
+          "Archaeology system with rare artifacts.",
+          "Performance improvements for all platforms."
+        ]
+      },
+      rules: {
+        title: "Server Rules",
+        pages: [
+          "1. No griefing or stealing.",
+          "2. Respect all players.",
+          "3. Keep chat appropriate.",
+          "4. Report bugs to staff."
+        ]
+      },
+      event: {
+        title: "Summer Build Contest",
+        pages: [
+          "Theme: Floating Islands!",
+          "Prize: Special rank + 64 diamonds.",
+          "Deadline: August 31st."
+        ]
+      },
+      guide: {
+        title: "Starter Guide",
+        pages: [
+          "Welcome to Opencraft!",
+          "Type /spawn to return home.",
+          "/warps shows all locations."
+        ]
+      },
+      news: {
+        title: "Monthly News",
+        pages: [
+          "New staff members: Notch, Dinnerbone.",
+          "Server uptime: 99.9% this month!",
+          "Next event: PvP Tournament."
+        ]
+      },
+      patch: {
+        title: "Patch Notes",
+        pages: [
+          "Fixed TNT duping glitch.",
+          "Redstone lag reduced by 40%.",
+          "New /report command."
+        ]
+      }
+    };
+
+    let currentPage = 0;
+    let currentBookId = null;
+
+    // Open Book from Shelf
+    function openBook(bookElement) {
+      const id = bookElement.getAttribute("data-id");
+      
+      if (bookElement.classList.contains("read")) {
+        alert("You've already read this book!");
+        return;
+      }
+
+      currentBookId = id;
+      const notification = notifications[id];
+
+      // Inject Pages
+      const pagesContainer = document.getElementById("pagesContainer");
+      pagesContainer.innerHTML = notification.pages
+        .map((text, index) => `
+          <div class="page ${index === 0 ? 'active' : ''}">
+            <strong>${notification.title}</strong><br><br>
+            ${text}
+          </div>
+        `)
+        .join("");
+
+      // Show UI
+      document.getElementById("dimOverlay").style.display = "block";
+      document.getElementById("bookPreview").style.display = "block";
+      currentPage = 0;
+      updateButtons();
+    }
+
+    // Close Book Preview
+    function closeBook() {
+      document.getElementById("dimOverlay").style.display = "none";
+      document.getElementById("bookPreview").style.display = "none";
+      
+      // Mark as read
+      if (currentBookId) {
+        const bookElement = document.querySelector(`.book[data-id="${currentBookId}"]`);
+        bookElement.classList.add("read");
+        localStorage.setItem(`read_${currentBookId}`, "true");
+      }
+    }
+
+    // Page Navigation
+    function updateButtons() {
+      const pages = document.querySelectorAll(".page");
+      const leftBtn = document.querySelector(".left");
+      const rightBtn = document.querySelector(".right");
+      
+      leftBtn.style.display = currentPage > 0 ? "block" : "none";
+      rightBtn.style.display = currentPage < pages.length - 1 ? "block" : "none";
+    }
+
+    function showPage(index) {
+      const pages = document.querySelectorAll(".page");
+      if (index < 0 || index >= pages.length) return;
+      
+      pages.forEach(page => page.classList.remove("active"));
+      pages[index].classList.add("active");
+      currentPage = index;
+      updateButtons();
+    }
+
+    function nextPage() {
+      showPage(currentPage + 1);
+    }
+
+    function prevPage() {
+      showPage(currentPage - 1);
+    }
+
+    // Initialize - Load read status
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".book").forEach(book => {
+        const id = book.getAttribute("data-id");
+        if (localStorage.getItem(`read_${id}`)) {
+          book.classList.add("read");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
